@@ -143,6 +143,11 @@ In the final stage of the project, I connected my Splunk SIEM to **Shuffle SOAR*
 
 After enabling Slack alerting, I added a second automated action: sending a private email alert to the SOC analyst's mailbox (such as Gmail or any other email service). This email asks whether the user should be blocked or investigated further, creating a simple escalation and approval workflow. To support this capability, I connected Shuffle with my **Active Directory** environment and configured actions that allow Shuffle to disable or block a user account if necessary. This step simulates how modern SOAR platforms automate decision-making and response actions, turning the entire setup into a functioning mini-SOC environment where alerts → notifications → decisions → automated responses flow seamlessly.
 
+## ⚠️ Issues Faced
+
+One major issue I faced was connecting Slack with Shuffle. At first, the integration was not working even though I created a Slack workspace and added an app. The problem was caused by incorrect or incomplete authentication details. After generating the correct **Client ID** and **Client Secret** from the Slack App settings and pasting them properly into Shuffle, the connection finally worked. This allowed Shuffle to send automated alerts to Slack without any further problems.
+
+
 
 ## 📘 Lessons Learned
 
