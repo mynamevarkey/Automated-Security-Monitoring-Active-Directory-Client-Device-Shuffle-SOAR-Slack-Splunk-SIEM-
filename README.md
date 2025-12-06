@@ -173,5 +173,7 @@ After enabling Slack alerting, I added a second automated action: sending a priv
 
 
 
-## Credits
-Designed and implemented by Varkey as part of a hands-on learning journey to strengthen detection engineering and security operations skills.MyDfir videos helped me throughout this process
+## 🙌 Credits
+
+Special thanks to **Mydfir** — I followed his guidance and completed this project. 
+
