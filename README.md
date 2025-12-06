@@ -99,24 +99,50 @@ Example:
 - Highlights log sources, forwarding paths, and SIEM ingestion
 - Identifies where detections are applied in the pipeline
 
-*Ref 2: SIEM Dashboard*
-- Authentication trends, failed logon spikes, and off-hours activity
-- Visualizations used to spot anomalies and pivot into investigations
+## 🥇 Step 1: Deploying Cloud Infrastructure
 
-*Ref 3: Detection Rule*
-- Correlation search for suspicious logon types (e.g., Type 3, 10)
-- Thresholds, exclusions, and rationale behind rule design
+The first step of this project was to set up the cloud environment using Vulture Cloud.  
+I deployed **three virtual machines** inside the same VPC (Virtual Private Cloud) to ensure secure internal communication:
 
-*Ref 4: Packet Capture*
-- Wireshark snapshot of anomalous traffic
-- Protocol details, endpoints, and potential IOC highlights
+- **Windows Server (Domain Controller)** – Used for configuring Active Directory.  
+- **Windows Client Machine** – Joined to the AD domain for log generation and authentication testing.  
+- **Ubuntu Server (Splunk Instance)** – Used to install and run Splunk for log ingestion and alerting.
 
-## Example Detections
-- Brute-force and password spraying indicators (failed logon bursts)
-- Suspicious logon patterns (remote/interactive off-hours)
-- Privilege escalation signals (admin group membership changes)
-- Account lockout anomalies correlated with source hosts
-- Endpoint process anomalies (with Sysmon) mapped to MITRE ATT&CK
+I then configured the **VPC networking**, ensuring all machines were able to communicate internally with private IP addresses.  
+Next, I applied **firewall rules** that restricted access so only my IP address could reach the machines externally.  
+This provided a secure and isolated environment for the SOC simulation.
+
+## 🥈 Step 2: Active Directory Configuration and User Setup
+
+After deploying the cloud machines, I configured the Windows Server as a Domain Controller and completed the Active Directory setup.  
+Using **Active Directory Users and Computers (ADUC)**, I created two domain users to simulate a real organizational environment.
+
+I added a user named **Tony** and enabled **Remote Desktop access** for him so he could log in to the domain-joined client machine.  
+This step allowed me to test authentication, user logon behavior, and generate Windows event logs required for Splunk monitoring.
+
+
+## 🥉 Step 3: Setting Up the Splunk Server and Log Forwarding
+
+Next, I deployed the Ubuntu machine that would act as my **Splunk Server**. After hosting the server on Vulture Cloud, I installed Splunk Enterprise on Ubuntu and configured it to receive logs from the Windows environment. Splunk is used here because it acts as the **central SIEM platform**, allowing me to collect, index, search, and analyze security events generated inside the Active Directory environment. This makes it possible to detect unauthorized access, login failures, and other suspicious activities.
+
+To ensure that the Splunk server receives real security event logs, I installed the **Splunk Universal Forwarder** on the Windows client machine and domaincontroller machine. The forwarder is required because Windows systems do not send logs by default; the forwarder securely transmits Windows Event Logs (such as security, system, and authentication logs) directly to the Splunk server in real time. This log flow is essential for building alerts and detecting abnormal behavior inside the network.
+
+Once the setup was complete, I configured Splunk to listen on the required port and verified that the Windows logs were being ingested. Finally, I hosted and accessed the **Splunk Web GUI**, which allowed me to monitor incoming logs, create detection rules, and visualize user activity within the Active Directory environment.
+
+## 🏁 Step 4: Verifying Log Ingestion, Access Testing, and Monitoring in Splunk
+
+After configuring the Splunk Forwarders on both the client machine and the Domain Controller, I verified that log forwarding was working correctly by checking the connection status on the Splunk server. Both systems successfully established communication with the Splunk instance running on the Ubuntu server. Once the Splunk service was started, I accessed the Splunk Web GUI, which allowed me to begin monitoring all incoming logs in real time. My first step inside Splunk was to create a dedicated index to store Windows event data.
+
+Initially, the RDP settings on the Windows client machine were restricted to allow only my IP address to connect. To simulate a real authentication scenario, I changed the RDP rule to allow connections from anyone. After updating this policy, I tested remote login by using my laptop to connect to the Windows client machine via **Windows Remote Desktop Connection**, logging in as the user **Tony** that I had created earlier in Active Directory. This triggered an event that appeared inside the Splunk SIEM dashboard, showing a successful remote connection coming from an external IP, which Splunk correctly identified as a potentially unauthorized access.
+
+To analyze this behavior further, I used a specialized Splunk query that filtered out all internal traffic and highlighted only IP addresses originating from outside my network range (specifically excluding addresses within the /40-range boundary). This made it easy to detect suspicious or unexpected login sources and confirmed that the SIEM setup was working exactly as intended.With that query, I saved the alert, and now it’s easier to access the unauthorized successful logins
+
+## 🧩 Step 5: Integrating Shuffle SOAR, Automating Splunk Alerts, and Enabling SOC Notifications
+
+In the final stage of the project, I connected my Splunk SIEM to **Shuffle SOAR** to automate incident handling. Inside Shuffle, I configured a workflow that receives alerts directly from Splunk whenever a suspicious or unauthorized login event occurs. Once the alert is ingested, the workflow parses the event data and forwards a detailed notification to Slack. This message contains the username, source IP address, timestamp, and the type of access attempt, allowing the SOC team to see real-time incidents inside their chat environment and respond immediately.
+
+After enabling Slack alerting, I added a second automated action: sending a private email alert to the SOC analyst's mailbox (such as Gmail or any other email service). This email asks whether the user should be blocked or investigated further, creating a simple escalation and approval workflow. To support this capability, I connected Shuffle with my **Active Directory** environment and configured actions that allow Shuffle to disable or block a user account if necessary. This step simulates how modern SOAR platforms automate decision-making and response actions, turning the entire setup into a functioning mini-SOC environment where alerts → notifications → decisions → automated responses flow seamlessly.
+
 
 ## 📘 Lessons Learned
 
