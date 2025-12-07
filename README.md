@@ -158,21 +158,18 @@ After enabling Slack alerting, I added a second automated action: sending a priv
 
 ![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/slack.png?raw=true)
 
-Alert message in the Team group 
-
+An alert has been posted in the team group
 
 ![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/mail%20.png?raw=true)
 
-Mail for the disabling the user 
-
+Request to disable the user account.
 
 ![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/disable%20.png?raw=true)
-By clicking in the link from the mail it will redirect you to this and you can submit the confirmation hear.
+When you click the link in the email, you will be redirected to this page, where you can submit your confirmation
 
 ![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/userdisable.png?raw=true)
 
-It's the same user tony.
-user now got disabled 
+It’s the same user, Tony. The account has now been disabled.
 
 
 ## ⚠️ Issues Faced
