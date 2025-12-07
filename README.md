@@ -85,14 +85,6 @@ The objective of this project is to understand how Active Directory works, explo
 
 
 ## Screenshots and Evidence
-Drag and drop screenshots here or host them on Imgur and reference them with `![Title](img_url)`.
-
-For each screenshot, include a short explanation:
-- What the screenshot shows
-- Why it matters (context or detection objective)
-- Any notable indicators or outcomes
-
-Example:
 
 *Ref 1: Network Diagram*
 ![image alt](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/Diagram.png?raw=true)
@@ -145,12 +137,43 @@ Initially, the RDP settings on the Windows client machine were restricted to all
 
 To analyze this behavior further, I used a specialized Splunk query that filtered out all internal traffic and highlighted only IP addresses originating from outside my network range (specifically excluding addresses within the /40-range boundary). This made it easy to detect suspicious or unexpected login sources and confirmed that the SIEM setup was working exactly as intended.With that query, I saved the alert, and now it’s easier to access the unauthorized successful logins
 
+![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/script.png?raw=true)
+
+meaning of this sript:
+-This query looks inside the wikk-ad index for Windows logon events with EventCode 4624, which represents successful logins. It focuses only on Logon Type 7 (workstation unlocks) and Logon Type 10 (Remote Desktop logins). The search then keeps only the events that contain a valid Source Network Address, excluding those that show “-” or any IPs starting with 40.x.x.x. After filtering, the query groups the results by time, computer name, source IP address, and username, and counts how many logins occurred for each combination. In simple terms, this script identifies and summarizes successful RDP and unlock logins from specific IP addresses while removing unnecessary or internal traffic.
+
+![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/splunk%20logs.png?raw=true)
+
+Splunk log which i got when when there was an unauthorized suceful login from through the user called tony 
+
+
 
 ## 🧩 Step 5: Integrating Shuffle SOAR, Automating Splunk Alerts, and Enabling SOC Notifications
 
 In the final stage of the project, I connected my Splunk SIEM to **Shuffle SOAR** to automate incident handling. Inside Shuffle, I configured a workflow that receives alerts directly from Splunk whenever a suspicious or unauthorized login event occurs. Once the alert is ingested, the workflow parses the event data and forwards a detailed notification to Slack. This message contains the username, source IP address, timestamp, and the type of access attempt, allowing the SOC team to see real-time incidents inside their chat environment and respond immediately.
 
 After enabling Slack alerting, I added a second automated action: sending a private email alert to the SOC analyst's mailbox (such as Gmail or any other email service). This email asks whether the user should be blocked or investigated further, creating a simple escalation and approval workflow. To support this capability, I connected Shuffle with my **Active Directory** environment and configured actions that allow Shuffle to disable or block a user account if necessary. This step simulates how modern SOAR platforms automate decision-making and response actions, turning the entire setup into a functioning mini-SOC environment where alerts → notifications → decisions → automated responses flow seamlessly.
+
+![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/shuffle.png?raw=true)
+
+![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/slack.png?raw=true)
+
+Alert message in the Team group 
+
+
+![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/mail%20.png?raw=true)
+
+Mail for the disabling the user 
+
+
+![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/disable%20.png?raw=true)
+By clicking in the link from the mail it will redirect you to this and you can submit the confirmation hear.
+
+![Title](https://github.com/mynamevarkey/Automated-Security-Monitoring-Active-Directory-Client-Device-Shuffle-SOAR-Slack-Splunk-SIEM-/blob/main/userdisable.png?raw=true)
+
+It's the same user tony.
+user now got disabled 
+
 
 ## ⚠️ Issues Faced
 
